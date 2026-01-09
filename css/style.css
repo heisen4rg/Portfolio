@@ -14,7 +14,7 @@ body {
   background: rgb(1, 27, 2);
   min-height: 100vh;
   font-family: system-ui, -apple-system, BlinkMacSystemFont,
-  "Segoe UI", Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial;
+    "Segoe UI", Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial;
   line-height: 1.6;
 }
 
@@ -52,6 +52,9 @@ h1 {
   position: relative;
   display: inline-block;
   overflow: visible;
+  /* Ensure variables have defaults */
+  --delta-x: 0px;
+  --delta-y: 0px;
 }
 
 /* Real D - hidden initially, shown after animation */
@@ -59,60 +62,63 @@ h1 {
   position: relative;
   display: inline-block;
   opacity: 0;
-  animation: showRealD 0.3s ease-out 1.4s forwards;
+  animation: showRealD 0.1s linear 2s forwards;
 }
 
-/* Animated D - spawns in center, moves to position */
-.hero-name::before {
+/* Animated D - spawns at 'pa' (delta), moves to start (0,0) */
+.name-initial::before {
   content: "D";
-  position: fixed;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%) scale(0);
-  font-size: clamp(2.8rem, 8vw, 5rem);
-  letter-spacing: 0.04em;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  transform: translate(var(--delta-x), var(--delta-y)) scale(0);
+  font-size: inherit;
+  letter-spacing: inherit;
   color: inherit;
   opacity: 1;
   z-index: 1000;
   pointer-events: none;
-  animation: 
-    dSpawn 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards,
-    dMoveToFinal 1.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.2s forwards,
-    dFadeOut 0.3s ease-in 1.4s forwards;
+  animation:
+    dJourney 2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
 
-/* Remaining letters - emerge smoothly from D */
+/* Helper span for position target - visual only, no style needed */
+.anim-target {
+  display: inline-block;
+}
+
+/* Remaining letters - emerge smoothly */
 .name-rest {
   display: inline-block;
   opacity: 0;
-  transform: translateX(-1.2em);
-  animation: restEmerge 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) 1s forwards;
+  transform: translateX(-1em);
+  /* Start slightly left (behind D) */
+  animation: restEmerge 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) 1.2s forwards;
 }
 
 /* Animations */
-@keyframes dSpawn {
+@keyframes dJourney {
   0% {
     opacity: 0;
-    transform: translate(-50%, -50%) scale(0);
+    transform: translate(var(--delta-x), var(--delta-y)) scale(0);
   }
-  100% {
+
+  15% {
     opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
+    transform: translate(var(--delta-x), var(--delta-y)) scale(1.2);
+    /* Pop out */
   }
-}
 
-@keyframes dMoveToFinal {
-  0% {
-    transform: translate(-50%, -50%) scale(1);
+  30% {
+    transform: translate(var(--delta-x), var(--delta-y)) scale(1);
+    /* Settle at start */
   }
+
   100% {
-    transform: translate(calc(-50% + var(--final-x, 0)), calc(-50% + var(--final-y, 0))) scale(1);
-  }
-}
-
-@keyframes dFadeOut {
-  to {
-    opacity: 0;
+    transform: translate(0, 0) scale(1);
+    /* Move to final */
   }
 }
 
@@ -122,11 +128,23 @@ h1 {
   }
 }
 
+@keyframes dFadeOut {
+
+  /* Not used anymore, we just let real D take over or keep pseudo visible? 
+       Actually, if we fade in real D, we should fade out pseudo or just hide it.
+       But since they overlay perfectly, we can just switch opacity.
+    */
+  to {
+    opacity: 0;
+  }
+}
+
 @keyframes restEmerge {
   0% {
     opacity: 0;
     transform: translateX(-1.2em);
   }
+
   100% {
     opacity: 1;
     transform: translateX(0);
@@ -150,6 +168,7 @@ h1 {
     opacity: 0;
     transform: translateY(20px);
   }
+
   100% {
     opacity: 1;
     transform: translateY(0);

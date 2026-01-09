@@ -2,39 +2,45 @@
 document.addEventListener('DOMContentLoaded', () => {
   const heroName = document.querySelector('.hero-name');
   const nameInitial = document.querySelector('.name-initial');
-  
+
   if (!heroName || !nameInitial) return;
-  
+
   // Function to calculate and set animation position
   const calculatePosition = () => {
-    // Get the final position of the D relative to viewport
-    const nameInitialRect = nameInitial.getBoundingClientRect();
-    
-    // Calculate center of viewport
-    const viewportCenterX = window.innerWidth / 2;
-    const viewportCenterY = window.innerHeight / 2;
-    
-    // Calculate final position of D (center of the letter)
-    const finalX = nameInitialRect.left + nameInitialRect.width / 2;
-    const finalY = nameInitialRect.top + nameInitialRect.height / 2;
-    
-    // Calculate the transform needed to move from viewport center to final position
-    // Since the pseudo-element is at left: 50%, top: 50% with translate(-50%, -50%),
-    // we need to move it by the difference
-    const offsetX = finalX - viewportCenterX;
-    const offsetY = finalY - viewportCenterY;
-    
-    // Set CSS custom property for final position
-    heroName.style.setProperty('--final-x', `${offsetX}px`);
-    heroName.style.setProperty('--final-y', `${offsetY}px`);
+    const animTarget = document.querySelector('.anim-target');
+
+    if (!animTarget) return;
+
+    // Get the rects
+    const targetRect = animTarget.getBoundingClientRect();
+    const initialRect = nameInitial.getBoundingClientRect();
+
+    // Calculate centers
+    const targetCenterX = targetRect.left + targetRect.width / 2;
+    const targetCenterY = targetRect.top + targetRect.height / 2;
+
+    const initialCenterX = initialRect.left + initialRect.width / 2;
+    const initialCenterY = initialRect.top + initialRect.height / 2;
+
+    // Calculate difference (Target - Initial)
+    // This is where we want to START (at target), relative to where we END (at initial)
+    const deltaX = targetCenterX - initialCenterX;
+    const deltaY = targetCenterY - initialCenterY;
+
+    // Set CSS custom properties
+    heroName.style.setProperty('--delta-x', `${deltaX}px`);
+    heroName.style.setProperty('--delta-y', `${deltaY}px`);
   };
-  
+
   // Calculate on load
   requestAnimationFrame(() => {
-    requestAnimationFrame(calculatePosition);
+    // Force a layout check to ensure fonts are loaded/rendering
+    document.fonts.ready.then(() => {
+      requestAnimationFrame(calculatePosition);
+    });
   });
-  
-  // Recalculate on resize for responsiveness
+
+  // Recalculate on resize
   let resizeTimeout;
   window.addEventListener('resize', () => {
     clearTimeout(resizeTimeout);
