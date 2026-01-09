@@ -27,9 +27,6 @@ body {
   text-align: center;
 }
 
-/* ===== RESPONSIVE LAYOUT & TYPOGRAPHY SYSTEM (ADDED) ===== */
-
-/* Layout container for readable widths on all screens */
 .container {
   width: 100%;
   max-width: 1200px;
@@ -37,18 +34,126 @@ body {
   padding-inline: clamp(1rem, 4vw, 2.5rem);
 }
 
-/* Consistent vertical spacing for sections */
 section {
   padding-block: clamp(3rem, 8vw, 6rem);
 }
 
-/* Fluid, device-safe typography */
 h1 {
   font-size: clamp(2.8rem, 8vw, 5rem);
   line-height: 1.15;
   letter-spacing: 0.04em;
   max-width: 20ch;
   margin-inline: auto;
+}
+
+/* ===== HERO NAME ANIMATION - SMOOTH & FLUID ===== */
+
+.hero-name {
+  position: relative;
+  display: inline-block;
+  overflow: visible;
+}
+
+/* Real D - hidden initially, shown after animation */
+.name-initial {
+  position: relative;
+  display: inline-block;
+  opacity: 0;
+  animation: showRealD 0.3s ease-out 1.4s forwards;
+}
+
+/* Animated D - spawns in center, moves to position */
+.hero-name::before {
+  content: "D";
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  font-size: clamp(2.8rem, 8vw, 5rem);
+  letter-spacing: 0.04em;
+  color: inherit;
+  opacity: 1;
+  z-index: 1000;
+  pointer-events: none;
+  animation: 
+    dSpawn 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards,
+    dMoveToFinal 1.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.2s forwards,
+    dFadeOut 0.3s ease-in 1.4s forwards;
+}
+
+/* Remaining letters - emerge smoothly from D */
+.name-rest {
+  display: inline-block;
+  opacity: 0;
+  transform: translateX(-1.2em);
+  animation: restEmerge 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) 1s forwards;
+}
+
+/* Animations */
+@keyframes dSpawn {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes dMoveToFinal {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+  100% {
+    transform: translate(calc(-50% + var(--final-x, 0)), calc(-50% + var(--final-y, 0))) scale(1);
+  }
+}
+
+@keyframes dFadeOut {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes showRealD {
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes restEmerge {
+  0% {
+    opacity: 0;
+    transform: translateX(-1.2em);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.fade-in-delay {
+  opacity: 0;
+  animation: fadeInUp 1s ease-out 1.3s forwards;
+  transform: translateY(20px);
+}
+
+.fade-in-delay-2 {
+  opacity: 0;
+  animation: fadeInUp 1s ease-out 1.8s forwards;
+  transform: translateY(20px);
+}
+
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 h2 {
@@ -60,4 +165,13 @@ h2 {
   font-size: clamp(1rem, 2.5vw, 1.125rem);
   max-width: 65ch;
   margin-inline: auto;
+}
+
+#projects {
+  color: rgba(255, 255, 255, 0.792);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
